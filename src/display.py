@@ -62,8 +62,19 @@ class LEDDisplay:
         destination = arrival.get("destination", "")
         stop_name = arrival.get("stop_name") or arrival.get("stop_id") or ""
         route_type = arrival.get("type", "subway")
+        route_id = (arrival.get("route") or "").upper()
         
-        route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
+        # Route colors (best-effort). If unknown, fall back to white/cyan.
+        route_colors = self.config.get_route_colors()
+        hex_color = route_colors.get("BUS") if route_type == "bus" else route_colors.get(route_id)
+        if hex_color and isinstance(hex_color, str) and len(hex_color) == 6:
+            try:
+                route_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+            except Exception:
+                route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
+        else:
+            route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
+
         route_prefix = "B" if route_type == "bus" else ""
         route_text = f"{route_prefix}{route}"
         time_text = f"{minutes} min"
@@ -74,8 +85,8 @@ class LEDDisplay:
         draw.text((time_x, y_offset), time_text, font=self.font, fill=(255, 255, 0))
         
         if y_offset + 12 < self.config.get_display_settings()["matrix_height"]:
-            # For subway, GTFS-RT doesn't provide a human headsign, so showing the stop name is more useful.
-            secondary_text = stop_name if route_type == "subway" else destination
+            # Prefer destination/headsign. If missing, fall back to stop name.
+            secondary_text = destination or stop_name
             if secondary_text:
                 text = secondary_text[:20] + "..." if len(secondary_text) > 20 else secondary_text
                 draw.text((2, y_offset + 12), text, font=self.small_font, fill=(200, 200, 200))

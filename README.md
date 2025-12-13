@@ -108,6 +108,16 @@ Edit `config/routes.json` to specify which routes and stops you want to monitor.
 - `display_name`: What to show on the display (defaults to route_id)
 - `type`: Either "subway" or "bus" (defaults to "subway" if not specified)
 
+### Subway destination/headsign + colors (optional)
+
+Subway GTFS-Realtime data does not reliably include a human-readable headsign, so this project uses a small override file:
+
+- `config/subway_overrides.json`
+  - `subway_terminals`: maps a route + direction (inferred from the trip_id suffix) to a terminal name (e.g. L N → "8 Av", L S → "Canarsie")
+  - `route_colors`: maps a route to a hex color used for the LED route label (and buses via `"BUS"`)
+
+You can edit `config/subway_overrides.json` to match your preferred wording/colors.
+
 **Subway Routes:**
 - Route IDs: Single letter/number like "1", "2", "3", "A", "B", "C", etc.
 - "SIR" for Staten Island Railway

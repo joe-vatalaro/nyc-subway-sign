@@ -18,7 +18,9 @@ class Config:
         self.bus_api_mode = os.getenv("BUS_API_MODE", "siri").strip().lower()
         self.update_interval = int(os.getenv("UPDATE_INTERVAL", "30"))
         self.verbose_terminal = os.getenv("VERBOSE_TERMINAL", "true").lower() == "true"
+        self.terminal_colors = os.getenv("TERMINAL_COLORS", "true").lower() == "true"
         self.routes_config = self._load_json("routes.json", {})
+        self.subway_overrides = self._load_json("subway_overrides.json", {})
         self.display_config = self._load_json("display_config.json", self._default_display_config())
     
     def _load_json(self, filename: str, default: Any) -> Any:
@@ -47,6 +49,12 @@ class Config:
     
     def get_routes(self) -> List[Dict]:
         return self.routes_config.get("routes", [])
+
+    def get_subway_terminals(self) -> Dict:
+        return self.subway_overrides.get("subway_terminals", {})
+
+    def get_route_colors(self) -> Dict:
+        return self.subway_overrides.get("route_colors", {})
     
     def get_display_settings(self) -> Dict:
         return self.display_config

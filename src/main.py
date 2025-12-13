@@ -33,6 +33,21 @@ class SubwaySign:
         
         print(f"\n  Found {len(arrivals)} upcoming arrival(s):")
         print("  " + "-" * 60)
+        def colorize(text: str, route: str, route_type: str) -> str:
+            if not self.config.terminal_colors:
+                return text
+            if route_type.upper() == "BUS":
+                return f"\033[36m{text}\033[0m"  # cyan
+            # Simple, readable defaults for common subway colors
+            r = (route or "").upper()
+            if r in ("4", "5", "6"):
+                return f"\033[32m{text}\033[0m"  # green
+            if r in ("B", "D", "F", "M"):
+                return f"\033[33m{text}\033[0m"  # yellow-ish for orange
+            if r in ("L", "GS", "FS", "H", "S"):
+                return f"\033[37m{text}\033[0m"  # gray/white
+            return text
+
         for arrival in arrivals:
             route_type = arrival.get("type", "subway").upper()
             route_display = arrival.get("display_name", arrival.get("route", "?"))
@@ -41,7 +56,9 @@ class SubwaySign:
             stop_label = arrival.get("stop_name") or arrival.get("stop_id", "")
             
             route_type_indicator = "[BUS]" if route_type == "BUS" else "[SUBWAY]"
-            print(f"  {route_type_indicator} {route_display:12} → {destination[:30]:30} | {minutes:3} min | Stop: {stop_label}")
+            route_label = colorize(f"{route_display:12}", arrival.get("route", ""), route_type)
+            dest_label = colorize(f"{destination[:30]:30}", arrival.get("route", ""), route_type)
+            print(f"  {route_type_indicator} {route_label} → {dest_label} | {minutes:3} min | Stop: {stop_label}")
         print("  " + "-" * 60)
     
     def run(self):

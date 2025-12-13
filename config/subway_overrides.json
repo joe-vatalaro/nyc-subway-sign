@@ -1,0 +1,23 @@
+{
+  "subway_terminals": {
+    "L": {
+      "N": "8 Av",
+      "S": "Canarsie"
+    },
+    "F": {
+      "N": "Jamaica-179 St",
+      "S": "Coney Island"
+    },
+    "6": {
+      "N": "Pelham Bay Park",
+      "S": "Brooklyn Bridge"
+    }
+  },
+  "route_colors": {
+    "L": "7C858C",
+    "F": "EB6800",
+    "6": "009952",
+    "BUS": "00FFFF"
+  }
+}
+

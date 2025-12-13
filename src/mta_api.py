@@ -12,6 +12,7 @@ class MTAClient:
         self.config = config
         self.bustime_api_key = config.bustime_api_key
         self.bus_api_mode = config.bus_api_mode
+        self.subway_terminals = config.get_subway_terminals()
         self.subway_base_url = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds"
         self.bus_gtfsrt_base_url = "https://gtfsrt.prod.obanyc.com"
         self.bus_siri_base_url = "https://bustime.mta.info/api/siri"
@@ -48,6 +49,32 @@ class MTAClient:
             trip_id = ""
 
         return trip_id or "Unknown trip"
+
+    def _get_subway_terminal_from_trip_id(self, route_id: str, trip_id: str) -> str:
+        """
+        Best-effort subway "destination/headsign" mapping.
+        - We infer direction from trip_id suffix patterns like '..N' / '..S'
+        - Then map (route_id, direction) to a human terminal name via config/subway_overrides.json
+        """
+        if not trip_id:
+            return ""
+
+        direction_letter = ""
+        # Common NYCT trip_id patterns: "104250_L..N", "107000_L..S"
+        if trip_id.endswith("..N") or trip_id.endswith("..S"):
+            direction_letter = trip_id[-1]
+        elif trip_id.endswith("_L..N") or trip_id.endswith("_L..S"):
+            direction_letter = trip_id[-1]
+        else:
+            # Fallback: last char if it's N/S
+            if trip_id[-1] in ("N", "S"):
+                direction_letter = trip_id[-1]
+
+        if not direction_letter:
+            return ""
+
+        per_route = self.subway_terminals.get(route_id.upper(), {})
+        return per_route.get(direction_letter, "")
 
     def _get_feed_path(self, route_id: str, route_type: str = "subway") -> Optional[str]:
         if route_type.lower() == "bus":
@@ -325,7 +352,10 @@ class MTAClient:
                             if minutes_away >= 0:
                                 arrivals.append({
                                     "route": route_id,
-                                    "destination": self._get_trip_display_text(trip),
+                    "destination": (
+                        self._get_subway_terminal_from_trip_id(route_id=route_id, trip_id=getattr(trip, "trip_id", ""))  # type: ignore[attr-defined]
+                        or self._get_trip_display_text(trip)
+                    ),
                                     "minutes_away": minutes_away,
                                     "arrival_time": arrival_time,
                                     "type": route_type.lower()
@@ -455,7 +485,10 @@ class MTAClient:
 
                 arrivals.append({
                     "route": route_id,
-                    "destination": self._get_trip_display_text(trip),
+                    "destination": (
+                        self._get_subway_terminal_from_trip_id(route_id=route_id, trip_id=getattr(trip, "trip_id", ""))  # type: ignore[attr-defined]
+                        or self._get_trip_display_text(trip)
+                    ),
                     "minutes_away": minutes_away,
                     "arrival_time": arrival_time,
                     "type": route_type,

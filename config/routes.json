@@ -30,15 +30,15 @@
     },
     {
       "route_id": "6",
-      "stop_id": "623N",
-      "stop_name": "23 St",
+      "stop_id": "636N",
+      "stop_name": "Astor Pl",
       "display_name": "6 ↑ Uptown",
       "type": "subway"
     },
     {
       "route_id": "6",
-      "stop_id": "623S",
-      "stop_name": "23 St",
+      "stop_id": "636S",
+      "stop_name": "Astor Pl",
       "display_name": "6 ↓ Downtown",
       "type": "subway"
     },
