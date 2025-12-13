@@ -83,17 +83,17 @@ Edit `config/routes.json` to specify which routes and stops you want to monitor.
 {
   "routes": [
     {
-      "route_id": "1",
-      "stop_id": "101N",
-      "direction": "0",
-      "display_name": "1",
+      "route_id": "6",
+      "stop_id": "623S",
+      "direction": "1",
+      "display_name": "6 ↓ Downtown",
       "type": "subway"
     },
     {
-      "route_id": "M1",
-      "stop_id": "200001",
+      "route_id": "M14A-SBS",
+      "stop_id": "401657",
       "direction": "0",
-      "display_name": "M1",
+      "display_name": "M14A ↑ North",
       "type": "bus"
     }
   ]
