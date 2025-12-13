@@ -60,11 +60,20 @@ class MTAClient:
             return ""
 
         direction_letter = ""
-        # Common NYCT trip_id patterns: "104250_L..N", "107000_L..S"
-        if trip_id.endswith("..N") or trip_id.endswith("..S"):
-            direction_letter = trip_id[-1]
-        elif trip_id.endswith("_L..N") or trip_id.endswith("_L..S"):
-            direction_letter = trip_id[-1]
+        # NYCT trip_id patterns vary by route/feed, e.g.:
+        # - "104250_L..N"
+        # - "107000_L..S"
+        # - "108550_6..N01R"
+        # - "105800_6..S01X014"
+        # - "108300_F..N69R"
+        #
+        # We look for the first occurrence of "..N" or "..S" anywhere in the trip_id.
+        idx_n = trip_id.find("..N")
+        idx_s = trip_id.find("..S")
+        if idx_n != -1 and (idx_s == -1 or idx_n < idx_s):
+            direction_letter = "N"
+        elif idx_s != -1:
+            direction_letter = "S"
         else:
             # Fallback: last char if it's N/S
             if trip_id[-1] in ("N", "S"):
