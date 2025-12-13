@@ -10,7 +10,6 @@ from src.config import Config
 class MTAClient:
     def __init__(self, config: Config):
         self.config = config
-        self.subway_api_key = config.mta_api_key
         self.bustime_api_key = config.bustime_api_key
         self.bus_api_mode = config.bus_api_mode
         self.subway_base_url = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds"
@@ -58,14 +57,9 @@ class MTAClient:
     def _fetch_subway_feed(self, feed_path: str) -> Optional[gtfs_realtime_pb2.FeedMessage]:
         encoded_path = urllib.parse.quote(feed_path, safe='')
         url = f"{self.subway_base_url}/{encoded_path}"
-        headers = {}
-        
-        if self.subway_api_key:
-            api_key_clean = self.subway_api_key.strip().strip("'\"")
-            headers["x-api-key"] = api_key_clean
         
         try:
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, timeout=10)
             response.raise_for_status()
             
             feed = gtfs_realtime_pb2.FeedMessage()
@@ -73,10 +67,7 @@ class MTAClient:
             return feed
         except Exception as e:
             if "403" in str(e):
-                if not self.subway_api_key:
-                    print(f"Error fetching subway feed {feed_path}: 403 Forbidden - try setting MTA_API_KEY from https://api.mta.info/")
-                else:
-                    print(f"Error fetching subway feed {feed_path}: 403 Forbidden - MTA_API_KEY may be invalid")
+                print(f"Error fetching subway feed {feed_path}: 403 Forbidden")
             else:
                 print(f"Error fetching subway feed {feed_path}: {e}")
             return None
@@ -242,6 +233,7 @@ class MTAClient:
             # semantics don't reliably match user expectations of "0/1".
 
             call = mvj.get("MonitoredCall", {}) or {}
+            stop_name = self._as_text(call.get("StopPointName"))
             expected_arrival = self._as_text(call.get("ExpectedArrivalTime"))
             expected_departure = self._as_text(call.get("ExpectedDepartureTime"))
             aimed_arrival = self._as_text(call.get("AimedArrivalTime"))
@@ -268,6 +260,7 @@ class MTAClient:
                 "minutes_away": minutes_away,
                 "arrival_time": epoch,
                 "type": "bus",
+                "stop_name": stop_name,
             })
 
         arrivals.sort(key=lambda x: x["arrival_time"])
@@ -355,6 +348,7 @@ class MTAClient:
             direction = route_config.get("direction")
             display_name = route_config.get("display_name", route_id)
             route_type = route_config.get("type", "subway").lower()
+            stop_name = route_config.get("stop_name")
 
             if not route_id or not stop_id:
                 continue
@@ -375,6 +369,8 @@ class MTAClient:
                     for arrival in arrivals:
                         arrival["display_name"] = display_name
                         arrival["stop_id"] = stop_id
+                        if stop_name and not arrival.get("stop_name"):
+                            arrival["stop_name"] = stop_name
                     all_arrivals.extend(arrivals)
                     continue
 
@@ -405,6 +401,8 @@ class MTAClient:
             for arrival in arrivals:
                 arrival["display_name"] = display_name
                 arrival["stop_id"] = stop_id
+                if stop_name and not arrival.get("stop_name"):
+                    arrival["stop_name"] = stop_name
 
             all_arrivals.extend(arrivals)
 

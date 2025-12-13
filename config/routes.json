@@ -3,36 +3,42 @@
     {
       "route_id": "L",
       "stop_id": "L06N",
+      "stop_name": "1 Av",
       "display_name": "L → 8 Av",
       "type": "subway"
     },
     {
       "route_id": "L",
       "stop_id": "L06S",
+      "stop_name": "1 Av",
       "display_name": "L → Brooklyn",
       "type": "subway"
     },
     {
       "route_id": "F",
       "stop_id": "F15N",
+      "stop_name": "2 Av",
       "display_name": "F ↑ Uptown",
       "type": "subway"
     },
     {
       "route_id": "F",
       "stop_id": "F15S",
+      "stop_name": "2 Av",
       "display_name": "F ↓ Downtown",
       "type": "subway"
     },
     {
       "route_id": "6",
       "stop_id": "623N",
+      "stop_name": "23 St",
       "display_name": "6 ↑ Uptown",
       "type": "subway"
     },
     {
       "route_id": "6",
       "stop_id": "623S",
+      "stop_name": "23 St",
       "display_name": "6 ↓ Downtown",
       "type": "subway"
     },

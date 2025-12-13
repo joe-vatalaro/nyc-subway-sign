@@ -38,10 +38,10 @@ class SubwaySign:
             route_display = arrival.get("display_name", arrival.get("route", "?"))
             minutes = arrival.get("minutes_away", 0)
             destination = arrival.get("destination", "Unknown")
-            stop_id = arrival.get("stop_id", "")
+            stop_label = arrival.get("stop_name") or arrival.get("stop_id", "")
             
             route_type_indicator = "[BUS]" if route_type == "BUS" else "[SUBWAY]"
-            print(f"  {route_type_indicator} {route_display:12} → {destination[:30]:30} | {minutes:3} min | Stop: {stop_id}")
+            print(f"  {route_type_indicator} {route_display:12} → {destination[:30]:30} | {minutes:3} min | Stop: {stop_label}")
         print("  " + "-" * 60)
     
     def run(self):

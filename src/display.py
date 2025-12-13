@@ -60,6 +60,7 @@ class LEDDisplay:
         route = arrival.get("display_name", arrival.get("route", "?"))
         minutes = arrival.get("minutes_away", 0)
         destination = arrival.get("destination", "")
+        stop_name = arrival.get("stop_name") or arrival.get("stop_id") or ""
         route_type = arrival.get("type", "subway")
         
         route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
@@ -72,9 +73,12 @@ class LEDDisplay:
         time_x = width - 50
         draw.text((time_x, y_offset), time_text, font=self.font, fill=(255, 255, 0))
         
-        if destination and y_offset + 12 < self.config.get_display_settings()["matrix_height"]:
-            dest_text = destination[:20] + "..." if len(destination) > 20 else destination
-            draw.text((2, y_offset + 12), dest_text, font=self.small_font, fill=(200, 200, 200))
+        if y_offset + 12 < self.config.get_display_settings()["matrix_height"]:
+            # For subway, GTFS-RT doesn't provide a human headsign, so showing the stop name is more useful.
+            secondary_text = stop_name if route_type == "subway" else destination
+            if secondary_text:
+                text = secondary_text[:20] + "..." if len(secondary_text) > 20 else secondary_text
+                draw.text((2, y_offset + 12), text, font=self.small_font, fill=(200, 200, 200))
     
     def show_arrivals(self, arrivals: List[Dict]):
         if not self.hardware_available:
