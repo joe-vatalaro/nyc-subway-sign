@@ -1,4 +1,4 @@
-#rpi-rgb-led-matrix>=2.0.0
+rpi-rgb-led-matrix>=2.0.0
 Pillow>=10.0.0
 requests>=2.31.0
 protobuf>=4.24.0
