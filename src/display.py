@@ -1,33 +1,50 @@
 import time
 from typing import List, Dict
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image, ImageDraw, ImageFont
 from src.config import Config
+
+try:
+    from rgbmatrix import RGBMatrix, RGBMatrixOptions
+    RGB_MATRIX_AVAILABLE = True
+except ImportError:
+    RGB_MATRIX_AVAILABLE = False
 
 
 class LEDDisplay:
     def __init__(self, config: Config):
         self.config = config
+        self.hardware_available = False
         display_settings = config.get_display_settings()
         
-        options = RGBMatrixOptions()
-        options.rows = display_settings["matrix_height"]
-        options.cols = display_settings["matrix_width"]
-        options.chain_length = display_settings["chain_length"]
-        options.parallel = display_settings["parallel"]
-        options.brightness = display_settings["brightness"]
-        options.led_rgb_sequence = display_settings["led_rgb_sequence"]
-        options.pixel_mapper_config = display_settings["pixel_mapper"]
-        options.row_address_type = display_settings["row_address_type"]
-        options.multiplexing = display_settings["multiplexing"]
-        options.pwm_bits = display_settings["pwm_bits"]
-        options.show_refresh_rate = display_settings["show_refresh_rate"]
-        options.gpio_slowdown = display_settings["gpio_slowdown"]
-        options.disable_hardware_pulsing = display_settings["disable_hardware_pulsing"]
-        options.hardware_mapping = "regular"
-        
-        self.matrix = RGBMatrix(options=options)
-        self.canvas = self.matrix.CreateFrameCanvas()
+        if RGB_MATRIX_AVAILABLE:
+            try:
+                options = RGBMatrixOptions()
+                options.rows = display_settings["matrix_height"]
+                options.cols = display_settings["matrix_width"]
+                options.chain_length = display_settings["chain_length"]
+                options.parallel = display_settings["parallel"]
+                options.brightness = display_settings["brightness"]
+                options.led_rgb_sequence = display_settings["led_rgb_sequence"]
+                options.pixel_mapper_config = display_settings["pixel_mapper"]
+                options.row_address_type = display_settings["row_address_type"]
+                options.multiplexing = display_settings["multiplexing"]
+                options.pwm_bits = display_settings["pwm_bits"]
+                options.show_refresh_rate = display_settings["show_refresh_rate"]
+                options.gpio_slowdown = display_settings["gpio_slowdown"]
+                options.disable_hardware_pulsing = display_settings["disable_hardware_pulsing"]
+                options.hardware_mapping = "regular"
+                
+                self.matrix = RGBMatrix(options=options)
+                self.canvas = self.matrix.CreateFrameCanvas()
+                self.hardware_available = True
+                print("LED Matrix hardware initialized successfully")
+            except Exception as e:
+                print(f"Warning: Could not initialize LED Matrix hardware: {e}")
+                print("Continuing in terminal-only mode...")
+                self.hardware_available = False
+        else:
+            print("Warning: rpi-rgb-led-matrix not available. Running in terminal-only mode...")
+            self.hardware_available = False
         
         try:
             self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 10)
@@ -60,6 +77,9 @@ class LEDDisplay:
             draw.text((2, y_offset + 12), dest_text, font=self.small_font, fill=(200, 200, 200))
     
     def show_arrivals(self, arrivals: List[Dict]):
+        if not self.hardware_available:
+            return
+        
         if not arrivals:
             self._show_no_data()
             return
@@ -84,6 +104,9 @@ class LEDDisplay:
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
     
     def _show_no_data(self):
+        if not self.hardware_available:
+            return
+        
         width = self.config.get_display_settings()["matrix_width"]
         height = self.config.get_display_settings()["matrix_height"]
         
@@ -104,6 +127,9 @@ class LEDDisplay:
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
     
     def clear(self):
+        if not self.hardware_available:
+            return
+        
         width = self.config.get_display_settings()["matrix_width"]
         height = self.config.get_display_settings()["matrix_height"]
         image = self._create_image(width, height)

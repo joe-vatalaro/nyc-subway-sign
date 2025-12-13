@@ -3,56 +3,48 @@
     {
       "route_id": "L",
       "stop_id": "L06N",
-      "direction": "0",
       "display_name": "L → 8 Av",
       "type": "subway"
     },
     {
       "route_id": "L",
       "stop_id": "L06S",
-      "direction": "1",
       "display_name": "L → Brooklyn",
       "type": "subway"
     },
     {
       "route_id": "F",
       "stop_id": "F15N",
-      "direction": "0",
       "display_name": "F ↑ Uptown",
       "type": "subway"
     },
     {
       "route_id": "F",
       "stop_id": "F15S",
-      "direction": "1",
       "display_name": "F ↓ Downtown",
       "type": "subway"
     },
     {
       "route_id": "6",
       "stop_id": "623N",
-      "direction": "0",
       "display_name": "6 ↑ Uptown",
       "type": "subway"
     },
     {
       "route_id": "6",
       "stop_id": "623S",
-      "direction": "1",
       "display_name": "6 ↓ Downtown",
       "type": "subway"
     },
     {
       "route_id": "M14A-SBS",
       "stop_id": "401657",
-      "direction": "0",
       "display_name": "M14A ↑ North",
       "type": "bus"
     },
     {
       "route_id": "M14A-SBS",
       "stop_id": "405576",
-      "direction": "1",
       "display_name": "M14A ↓ South",
       "type": "bus"
     }

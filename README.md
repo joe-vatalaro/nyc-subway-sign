@@ -54,11 +54,13 @@ cd nyc-subway-sign
 pip3 install -r requirements.txt
 ```
 
-### 5. Configure MTA API Key
+**Note:** If you're testing without LED hardware (e.g., on a non-Raspberry Pi system), the `rpi-rgb-led-matrix` package may fail to install. This is fine - the application will run in terminal-only mode and display arrival information in the console. On a Raspberry Pi, install the RGB matrix library first (see step 3).
 
-**Note:** An API key is only required if you're using bus routes. Subway routes work without an API key.
+### 5. Configure API Keys
 
-If you're using bus routes, get your MTA API key from https://api.mta.info/
+**Note:** Subway and bus use different APIs:
+- Subway GTFS-RT works without an API key in this project setup.
+- BusTime uses your **Bus Time API key** (`BUSTIME_API_KEY`) via **SIRI StopMonitoring** (recommended).
 
 Create a `.env` file in the project root:
 
@@ -67,13 +69,14 @@ cp env.template .env
 nano .env
 ```
 
-Add your API key (only needed for bus routes):
+Add your Bus Time API key:
 ```
-MTA_API_KEY=your_actual_api_key_here
+BUSTIME_API_KEY=your_bustime_api_key_here
+BUS_API_MODE=siri
 UPDATE_INTERVAL=30
 ```
 
-If you're only using subway routes, you can leave `MTA_API_KEY` empty or omit it entirely.
+If you only use subway routes, you can omit `BUSTIME_API_KEY` and the bus routes will simply show no data.
 
 ### 6. Configure Routes
 
@@ -85,14 +88,12 @@ Edit `config/routes.json` to specify which routes and stops you want to monitor.
     {
       "route_id": "6",
       "stop_id": "623S",
-      "direction": "1",
       "display_name": "6 ↓ Downtown",
       "type": "subway"
     },
     {
       "route_id": "M14A-SBS",
       "stop_id": "401657",
-      "direction": "0",
       "display_name": "M14A ↑ North",
       "type": "bus"
     }
@@ -103,7 +104,7 @@ Edit `config/routes.json` to specify which routes and stops you want to monitor.
 **Configuration Fields:**
 - `route_id`: The route identifier (e.g., "1", "A", "M1", "B44")
 - `stop_id`: The stop identifier (different format for subway vs bus)
-- `direction`: "0" = Northbound/Upbound, "1" = Southbound/Downbound (optional for buses)
+- `direction`: No longer needed (stop IDs already encode direction for subway; BusTime StopMonitoring doesn’t need it)
 - `display_name`: What to show on the display (defaults to route_id)
 - `type`: Either "subway" or "bus" (defaults to "subway" if not specified)
 
@@ -148,7 +149,11 @@ cd ~/nyc-subway-sign
 sudo python3 src/main.py
 ```
 
-**Note:** `sudo` is required for GPIO access on Raspberry Pi.
+**Note:** 
+- `sudo` is required for GPIO access on Raspberry Pi when using LED hardware
+- If running without hardware, you can run without `sudo`: `python3 src/main.py`
+- The application will automatically detect if LED hardware is available and run in terminal-only mode if not
+- Terminal output shows detailed arrival information (enabled by default via `VERBOSE_TERMINAL=true` in `.env`)
 
 ### 9. Auto-start on Boot (Optional)
 

@@ -12,7 +12,15 @@ CONFIG_DIR = PROJECT_ROOT / "config"
 
 class Config:
     def __init__(self):
-        self.mta_api_key = os.getenv("MTA_API_KEY", "")
+        subway_api_key = os.getenv("MTA_API_KEY", "")
+        self.mta_api_key = subway_api_key.strip().strip("'\"") if subway_api_key else ""
+
+        bustime_api_key = os.getenv("BUSTIME_API_KEY", "")
+        bustime_api_key_clean = bustime_api_key.strip().strip("'\"") if bustime_api_key else ""
+        # Backwards compatible: if BUSTIME_API_KEY isn't set, reuse MTA_API_KEY.
+        self.bustime_api_key = bustime_api_key_clean or self.mta_api_key
+
+        self.bus_api_mode = os.getenv("BUS_API_MODE", "siri").strip().lower()
         self.update_interval = int(os.getenv("UPDATE_INTERVAL", "30"))
         self.verbose_terminal = os.getenv("VERBOSE_TERMINAL", "true").lower() == "true"
         self.routes_config = self._load_json("routes.json", {})
