@@ -14,6 +14,7 @@ class Config:
     def __init__(self):
         self.mta_api_key = os.getenv("MTA_API_KEY", "")
         self.update_interval = int(os.getenv("UPDATE_INTERVAL", "30"))
+        self.verbose_terminal = os.getenv("VERBOSE_TERMINAL", "true").lower() == "true"
         self.routes_config = self._load_json("routes.json", {})
         self.display_config = self._load_json("display_config.json", self._default_display_config())
     
