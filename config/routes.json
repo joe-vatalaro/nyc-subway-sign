@@ -45,12 +45,14 @@
     {
       "route_id": "M14A-SBS",
       "stop_id": "401657",
+      "stop_name": "Av A/5 St",
       "display_name": "M14A ↑ North",
       "type": "bus"
     },
     {
       "route_id": "M14A-SBS",
       "stop_id": "405576",
+      "stop_name": "Av A/5 St",
       "display_name": "M14A ↓ South",
       "type": "bus"
     }

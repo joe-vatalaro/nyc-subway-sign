@@ -369,7 +369,8 @@ class MTAClient:
                     for arrival in arrivals:
                         arrival["display_name"] = display_name
                         arrival["stop_id"] = stop_id
-                        if stop_name and not arrival.get("stop_name"):
+                        # Config override: if stop_name is provided, always use it (even if SIRI returns StopPointName).
+                        if stop_name:
                             arrival["stop_name"] = stop_name
                     all_arrivals.extend(arrivals)
                     continue
@@ -401,7 +402,7 @@ class MTAClient:
             for arrival in arrivals:
                 arrival["display_name"] = display_name
                 arrival["stop_id"] = stop_id
-                if stop_name and not arrival.get("stop_name"):
+                if stop_name:
                     arrival["stop_name"] = stop_name
 
             all_arrivals.extend(arrivals)
