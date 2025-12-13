@@ -1,0 +1,16 @@
+{
+  "matrix_width": 64,
+  "matrix_height": 32,
+  "chain_length": 1,
+  "parallel": 1,
+  "brightness": 50,
+  "led_rgb_sequence": "RGB",
+  "pixel_mapper": "",
+  "row_address_type": 0,
+  "multiplexing": 0,
+  "pwm_bits": 11,
+  "show_refresh_rate": false,
+  "gpio_slowdown": 1,
+  "disable_hardware_pulsing": false
+}
+
