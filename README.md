@@ -49,7 +49,7 @@ sudo pip3 install -e .
 
 ```bash
 cd ~
-git clone <your-repo-url> nyc-subway-sign
+git clone https://github.com/joe-vatalaro/nyc-subway-sign.git
 cd nyc-subway-sign
 pip3 install -r requirements.txt
 ```
@@ -80,7 +80,7 @@ If you only use subway routes, you can omit `BUSTIME_API_KEY` and the bus routes
 
 ### 6. Configure Routes
 
-Edit `config/routes.json` to specify which routes and stops you want to monitor. You can mix subway and bus routes:
+Edit `config/routes.json` to specify which routes and stops you want to monitor. You can mix subway and bus routes, find config information for a specific route in the `gtfs_mta` folder:
 
 ```json
 {
@@ -131,7 +131,6 @@ You can edit `config/subway_overrides.json` to match your preferred wording/colo
   - Use the MTA Bus Time API or GTFS static data
   - Online tools like https://bustime.mta.info/ can help identify stops
   - Bus stop IDs are typically 6-digit numbers
-  - Direction is optional for buses but can help filter results
 
 ### 7. Configure Display Settings
 
@@ -209,7 +208,8 @@ nyc-subway-sign/
 │   └── display.py       # LED matrix display handler
 ├── config/
 │   ├── routes.json      # Route and stop configuration
-│   └── display_config.json  # Display hardware settings
+│   ├── display_config.json  # Display hardware settings
+|   └── subway_overrides.json  # Add colors & terminal stations
 ├── requirements.txt     # Python dependencies
 ├── env.template         # Environment variables template
 ├── run.sh              # Convenience run script
@@ -224,7 +224,7 @@ nyc-subway-sign/
 - Verify HUB75 connections
 
 ### API Issues
-- Verify your MTA API key is correct
+- Verify your Bus Time API key is correct
 - Check internet connectivity: `ping api-endpoint.mta.info`
 - Ensure stop IDs and route IDs are correct
 
