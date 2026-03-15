@@ -123,6 +123,7 @@ class LEDDisplay:
 
         image = self._create_image(width, height)
         draw = ImageDraw.Draw(image)
+        draw.fontmode = "1"
 
         for i, arrival in enumerate(arrivals[:3]):
             y_offset = top_padding + i * row_height
@@ -147,7 +148,8 @@ class LEDDisplay:
         
         image = self._create_image(width, height)
         draw = ImageDraw.Draw(image)
-        
+        draw.fontmode = "1"
+
         text = "No Data"
         bbox = draw.textbbox((0, 0), text, font=self.font)
         text_width = bbox[2] - bbox[0]
