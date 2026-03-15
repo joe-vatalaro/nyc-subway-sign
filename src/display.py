@@ -48,7 +48,7 @@ class LEDDisplay:
             self.hardware_available = False
         
         try:
-            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 8)
+            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 9)
         except:
             self.font = ImageFont.load_default()
     
