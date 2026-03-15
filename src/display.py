@@ -48,7 +48,7 @@ class LEDDisplay:
             self.hardware_available = False
         
         try:
-            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 11)
+            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 9)
         except:
             self.font = ImageFont.load_default()
     
@@ -73,9 +73,14 @@ class LEDDisplay:
             route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
 
         route_id_short = (arrival.get("route") or "").split("-")[0]
-        route_prefix = "B" if route_type == "bus" else ""
-        route_label = f"{route_prefix}{route_id_short}" if route_id_short else route
-        dest_short = (destination or "")[:8].strip()
+        route_label = route_id_short or route
+
+        stop_id = (arrival.get("stop_id") or "").upper()
+        if route_type == "subway":
+            direction = "↑" if stop_id.endswith("N") else "↓" if stop_id.endswith("S") else ""
+            dest_short = direction
+        else:
+            dest_short = (destination or "")[:6].strip()
         time_label = f"{minutes}m"
         route_color_bright = tuple(min(255, c + 40) for c in route_color)
         time_color = (255, 255, 0)
