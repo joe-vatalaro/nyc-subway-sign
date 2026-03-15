@@ -10,7 +10,7 @@
   "multiplexing": 0,
   "pwm_bits": 11,
   "show_refresh_rate": false,
-  "gpio_slowdown": 1,
+  "gpio_slowdown": 4,
   "disable_hardware_pulsing": false
 }
 

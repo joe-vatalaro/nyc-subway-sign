@@ -32,7 +32,8 @@ class LEDDisplay:
                 options.show_refresh_rate = display_settings["show_refresh_rate"]
                 options.gpio_slowdown = display_settings["gpio_slowdown"]
                 options.disable_hardware_pulsing = display_settings["disable_hardware_pulsing"]
-                options.hardware_mapping = "regular"
+                options.hardware_mapping = "adafruit-hat"
+                options.panel_type = "FM6127"
                 
                 self.matrix = RGBMatrix(options=options)
                 self.canvas = self.matrix.CreateFrameCanvas()
