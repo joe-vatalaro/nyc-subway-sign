@@ -48,11 +48,9 @@ class LEDDisplay:
             self.hardware_available = False
         
         try:
-            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 10)
-            self.small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 8)
+            self.font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 11)
         except:
             self.font = ImageFont.load_default()
-            self.small_font = ImageFont.load_default()
     
     def _create_image(self, width: int, height: int) -> Image.Image:
         return Image.new("RGB", (width, height), color=(0, 0, 0))
@@ -61,11 +59,9 @@ class LEDDisplay:
         route = arrival.get("display_name", arrival.get("route", "?"))
         minutes = arrival.get("minutes_away", 0)
         destination = arrival.get("destination", "")
-        stop_name = arrival.get("stop_name") or arrival.get("stop_id") or ""
         route_type = arrival.get("type", "subway")
         route_id = (arrival.get("route") or "").upper()
-        
-        # Route colors (best-effort). If unknown, fall back to white/cyan.
+
         route_colors = self.config.get_route_colors()
         hex_color = route_colors.get("BUS") if route_type == "bus" else route_colors.get(route_id)
         if hex_color and isinstance(hex_color, str) and len(hex_color) == 6:
@@ -76,46 +72,59 @@ class LEDDisplay:
         else:
             route_color = (0, 255, 255) if route_type == "bus" else (255, 255, 255)
 
+        route_id_short = (arrival.get("route") or "").split("-")[0]
         route_prefix = "B" if route_type == "bus" else ""
-        route_text = f"{route_prefix}{route}"
-        time_text = f"{minutes} min"
-        
-        draw.text((2, y_offset), route_text, font=self.font, fill=route_color)
-        
-        time_x = width - 50
-        draw.text((time_x, y_offset), time_text, font=self.font, fill=(255, 255, 0))
-        
-        if y_offset + 12 < self.config.get_display_settings()["matrix_height"]:
-            # Prefer destination/headsign. If missing, fall back to stop name.
-            secondary_text = destination or stop_name
-            if secondary_text:
-                text = secondary_text[:20] + "..." if len(secondary_text) > 20 else secondary_text
-                draw.text((2, y_offset + 12), text, font=self.small_font, fill=(200, 200, 200))
+        route_label = f"{route_prefix}{route_id_short}" if route_id_short else route
+        dest_short = (destination or "")[:8].strip()
+        time_label = f"{minutes}m"
+        route_color_bright = tuple(min(255, c + 40) for c in route_color)
+        time_color = (255, 255, 0)
+        dest_color = (255, 255, 255)
+
+        x = 2
+        draw.text((x, y_offset), route_label, font=self.font, fill=route_color_bright)
+        bbox = draw.textbbox((0, 0), route_label, font=self.font)
+        x += bbox[2] - bbox[0] + 2
+
+        if dest_short:
+            draw.text((x, y_offset), dest_short, font=self.font, fill=dest_color)
+            bbox = draw.textbbox((0, 0), dest_short, font=self.font)
+            x += bbox[2] - bbox[0] + 4
+
+        time_bbox = draw.textbbox((0, 0), time_label, font=self.font)
+        time_width = time_bbox[2] - time_bbox[0]
+        draw.text((width - time_width - 2, y_offset), time_label, font=self.font, fill=time_color)
     
     def show_arrivals(self, arrivals: List[Dict]):
         if not self.hardware_available:
             return
-        
+
         if not arrivals:
             self._show_no_data()
             return
-        
+
         width = self.config.get_display_settings()["matrix_width"]
         height = self.config.get_display_settings()["matrix_height"]
-        
+
+        line_height = 10
+        divider_height = 1
+        row_height = line_height + divider_height
+        top_padding = 0
+
         image = self._create_image(width, height)
         draw = ImageDraw.Draw(image)
-        
-        y_offset = 2
-        line_height = 24
-        
-        for arrival in arrivals[:3]:
+
+        for i, arrival in enumerate(arrivals[:3]):
+            y_offset = top_padding + i * row_height
             if y_offset + line_height > height:
                 break
-            
+
             self._draw_arrival(draw, y_offset, arrival, width)
-            y_offset += line_height
-        
+
+            if i < 2 and y_offset + row_height < height:
+                divider_y = y_offset + line_height
+                draw.line([(0, divider_y), (width, divider_y)], fill=(60, 60, 60))
+
         self.canvas.SetImage(image)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
     
