@@ -107,6 +107,7 @@ Edit `config/routes.json` to specify which routes and stops you want to monitor.
 - `stop_name`: Optional. If provided, we will show this in the terminal/LED display instead of the stop code. **For buses, this also overrides the stop name returned by BusTime SIRI.**
 - `display_name`: What to show on the display (defaults to route_id)
 - `type`: Either "subway" or "bus" (defaults to "subway" if not specified)
+- `walk_time`: Optional. Minimum minutes away to show (default 0). Arrivals with `minutes_away < walk_time` are excluded, since you need time to reach the stop.
 
 ### Subway destination/headsign + colors (optional)
 

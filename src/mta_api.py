@@ -405,6 +405,8 @@ class MTAClient:
                         stop_id=stop_id,
                         direction=None,
                     )
+                    walk_time = int(route_config.get("walk_time", 0))
+                    arrivals = [a for a in arrivals if a["minutes_away"] >= walk_time]
                     for arrival in arrivals:
                         arrival["display_name"] = display_name
                         arrival["stop_id"] = stop_id
@@ -437,6 +439,8 @@ class MTAClient:
                 direction=direction,
                 route_type=route_type,
             )
+            walk_time = int(route_config.get("walk_time", 0))
+            arrivals = [a for a in arrivals if a["minutes_away"] >= walk_time]
 
             for arrival in arrivals:
                 arrival["display_name"] = display_name
